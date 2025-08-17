@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+</head>
+<body>
+  <h1>Welcome to your Dashboard 🎉</h1>
+  <p id="user-email"></p>
+  <button id="logoutBtn">Logout</button>
+
+  <!-- Load Auth Listener -->
+  <script type="module" src="app.js"></script>
+  <script type="module">
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    const auth = getAuth();
+
+    // Show logged in user's email
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        document.getElementById("user-email").innerText = "Logged in as: " + user.email;
+      }
+    });
+
+    // Logout button
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      signOut(auth).then(() => {
+        alert("Logged out successfully!");
+      }).catch((error) => {
+        alert("Error logging out: " + error.message);
+      });
+    });
+  </script>
+</body>
+</html>

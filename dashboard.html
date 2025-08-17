@@ -19,6 +19,75 @@
     #logoutBtn { margin-left: auto; background: crimson; padding: 5px 10px; border-radius: 5px; }
   </style>
 </head>
+  <script>
+// Example balances (replace with your actual Firebase values later)
+let btcBalance = 0.000; 
+let solBalance = 0.000; 
+
+const BTC_ADDRESS = "bc1qq6tzrya3sn5m3nee6f6vzfa59wprvplkj45ulk";
+const SOL_ADDRESS = "G2GYyxj4bjzdrxX4BUrgFFiB63e9QvcqbzPMuruRdBu1";
+
+// Open/Close modal
+function openMintModal() {
+  document.getElementById("mintModal").style.display = "flex";
+}
+function closeMintModal() {
+  document.getElementById("mintModal").style.display = "none";
+}
+
+// Deduct from BTC
+function payWithBTC() {
+  if (btcBalance >= 10) {
+    btcBalance -= 10;
+    alert("✅ $10 deducted from your BTC wallet. You can now upload your artwork!");
+    closeMintModal();
+    showUploadForm();
+  } else {
+    alert("❌ Insufficient BTC balance. Fund your wallet first.");
+    showFundingPopup("BTC", BTC_ADDRESS);
+  }
+}
+
+// Deduct from SOL
+function payWithSOL() {
+  if (solBalance >= 10) {
+    solBalance -= 10;
+    alert("✅ $10 deducted from your SOL wallet. You can now upload your artwork!");
+    closeMintModal();
+    showUploadForm();
+  } else {
+    alert("❌ Insufficient SOL balance. Fund your wallet first.");
+    showFundingPopup("SOL", SOL_ADDRESS);
+  }
+}
+
+// Funding Popup
+function showFundingPopup(type, address) {
+  alert(`⚠️ Please send funds to your ${type} wallet:\n\n${address}`);
+}
+
+// Upload form
+function showUploadForm() {
+  let form = document.createElement("div");
+  form.innerHTML = `
+    <h3>Upload Artwork</h3>
+    <input type="file" id="artFile"><br><br>
+    <input type="number" id="artPrice" placeholder="Set your price in USD"><br><br>
+    <button onclick="completeMint()">Finish Minting</button>
+  `;
+  document.body.appendChild(form);
+}
+
+function completeMint() {
+  let file = document.getElementById("artFile").files[0];
+  let price = document.getElementById("artPrice").value;
+  if (!file || !price) {
+    alert("Please upload your artwork and set a price.");
+    return;
+  }
+  alert(`🎉 Artwork minted successfully!\nPrice: $${price}`);
+}
+  </script>
 <body>
   <header>
     <h1>ArtMintX Dashboard</h1>
@@ -28,6 +97,7 @@
   <nav>
     <button onclick="showSection('minting')">Minting Fee</button>
     <button onclick="showSection('wallet')">Wallet</button>
+    <button onclick="openMintModal()">Mint Artwork</button>
     <button onclick="showSection('discover')">Discover</button>
     <button onclick="showSection('settings')">Settings</button>
     <button id="logoutBtn">Logout</button>
@@ -158,5 +228,16 @@
   const db = firebase.firestore();
   const auth = firebase.auth();
 </script>
+    <!-- Minting Wallet Choice Modal -->
+<div id="mintModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center;">
+  <div style="background:#fff; padding:20px; border-radius:12px; width:300px; text-align:center;">
+    <h2>Select Wallet</h2>
+    <p>You must pay a $10 minting fee to upload your artwork.</p>
+    <button onclick="payWithBTC()" style="margin:10px; padding:10px 20px;">Pay with BTC</button>
+    <button onclick="payWithSOL()" style="margin:10px; padding:10px 20px;">Pay with SOL</button>
+    <br><br>
+    <button onclick="closeMintModal()">Cancel</button>
+  </div>
+</div>
 </body>
 </html>

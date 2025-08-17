@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head <!-- Firebase App (required) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+<!-- Firebase Authentication -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ArtMintX Dashboard</title>
@@ -34,10 +39,70 @@
     <p>Here you can set and view minting fees.</p>
   </section>
 
-  <section id="wallet" style="display:none;">
-    <h2>Wallet</h2>
-    <p>Wallet balance and transactions will show here.</p>
-  </section>
+  <section id="wallet" style="display:<h2 class="text-xl font-bold mb-4">Your Wallet</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- BTC Wallet -->
+  <div class="bg-gray-800 p-4 rounded-xl shadow">
+    <h3 class="text-lg font-semibold">BTC Wallet</h3>
+    <p id="btc-balance">Balance: 0.000 BTC</p>
+    <p id="btc-usd" class="text-sm text-gray-400">≈ $0.00</p>
+    <button onclick="fundWallet('btc')" class="mt-3 bg-yellow-500 px-3 py-2 rounded-lg shadow hover:bg-yellow-400">
+      Fund BTC Wallet
+    </button>
+  </div>
+
+  <!-- SOL Wallet -->
+  <div class="bg-gray-800 p-4 rounded-xl shadow">
+    <h3 class="text-lg font-semibold">Solana Wallet</h3>
+    <p id="sol-balance">Balance: 0.000 SOL</p>
+    <p id="sol-usd" class="text-sm text-gray-400">≈ $0.00</p>
+    <button onclick="fundWallet('sol')" class="mt-3 bg-purple-500 px-3 py-2 rounded-lg shadow hover:bg-purple-400">
+      Fund SOL Wallet
+    </button>
+  </div>
+</div>
+
+<script>
+  // Admin wallets (your real addresses)
+  const adminWallets = {
+    btc: "bc1qq6tzrya3sn5m3nee6f6vzfa59wprvplkj45ulk",
+    sol: "G2GYyxj4bjzdrxX4BUrgFFiB63e9QvcqbzPMuruRdBu1"
+  };
+
+  // Wallet balances (start at zero)
+  let userWallet = {
+    btc: 0.000,
+    sol: 0.000
+  };
+
+  // Function to show funding address
+  function fundWallet(type) {
+    let address = adminWallets[type];
+    alert(`Send your ${type.toUpperCase()} deposit to this address:\n\n${address}\n\nAfter sending, your balance will update once confirmed.`);
+  }
+
+  // Fetch live crypto prices
+  async function updatePrices() {
+    try {
+      let res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,solana&vs_currencies=usd");
+      let data = await res.json();
+
+      // BTC conversion
+      let btcUsdValue = (userWallet.btc * data.bitcoin.usd).toFixed(2);
+      document.getElementById("btc-usd").innerText = `≈ $${btcUsdValue}`;
+
+      // SOL conversion
+      let solUsdValue = (userWallet.sol * data.solana.usd).toFixed(2);
+      document.getElementById("sol-usd").innerText = `≈ $${solUsdValue}`;
+    } catch (e) {
+      console.error("Error fetching prices", e);
+    }
+  }
+
+  // Update prices every 30s
+  setInterval(updatePrices, 30000);
+  updatePrices();
+</script>
 
   <section id="discover" style="display:none;">
     <h2>Discover</h2>
@@ -77,6 +142,21 @@
       document.querySelectorAll("section").forEach(sec => sec.style.display = "none");
       document.getElementById(sectionId).style.display = "block";
     };
-  </script>
+  </script <script>
+  // Your Firebase config (replace with your actual values)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDX5l-iBZLWspb6bOlQSMvm7PnP2MYBs5o",
+    authDomain: "artmintx.firebaseapp.com",
+    projectId: "artmintx",
+    storageBucket: "artmintx.appspot.com",
+    messagingSenderId: "209020671049",
+    appId: "1:209020671049:web:df8f1f8b986a747ba1db98"
+  };
+
+  // Initialize Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+</script>
 </body>
 </html>
